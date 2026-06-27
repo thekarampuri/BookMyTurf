@@ -14,12 +14,12 @@ export default function HomePage() {
         {/* Background Turf Image with dark warm overlay */}
         <div className="hero__bg" style={{ backgroundImage: "url('/turf_hero.png')" }}>
           <div className="hero__overlay" />
-          <div className="hero__painted-text">TURF NINE</div>
+          <div className="hero__painted-text">BOOK MY TURF</div>
         </div>
         
         <div className="hero__content">
           <h1 className="hero__title">
-            <span className="hero__title-main">TurfNine</span><br />
+            <span className="hero__title-main">BookMyTurf</span><br />
             <span className="hero__title-accent">Experience</span>
           </h1>
           <p className="hero__subtitle">

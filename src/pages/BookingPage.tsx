@@ -62,20 +62,43 @@ export default function BookingPage() {
   const [selectedTurf, setSelectedTurf] = useState<Turf | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const [duration, setDuration] = useState<number>(1);
-  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
 
   const grid = useMemo(() => get3WeekGrid(), []);
-  const slots = useMemo(() => {
-    if (!selectedTurf) return [];
-    return generateSlots(selectedTurf, selectedDate, duration);
-  }, [selectedTurf, selectedDate, duration]);
+  
+  const { slots, combinedSlot, selectedIndices } = useMemo(() => {
+    if (!selectedTurf) return { slots: [], combinedSlot: null, selectedIndices: [] };
+    const s = generateSlots(selectedTurf, selectedDate);
+    
+    let combined: TimeSlot | null = null;
+    let indices: number[] = [];
 
-  const canContinue = selectedTurf && selectedDate && selectedSlot;
+    if (selectedSlotId) {
+      const idx = s.findIndex(slot => slot.id === selectedSlotId);
+      if (idx !== -1) {
+        const chunk = s.slice(idx, idx + duration);
+        if (chunk.length === duration && !chunk.some(c => c.isBooked)) {
+          indices = chunk.map((_, i) => idx + i);
+          combined = {
+            id: selectedSlotId,
+            time: chunk[0].time,
+            endTime: chunk[chunk.length - 1].endTime,
+            price: chunk.reduce((sum, c) => sum + c.price, 0),
+            isBooked: false,
+            isPrime: chunk[0].isPrime
+          };
+        }
+      }
+    }
+    return { slots: s, combinedSlot: combined, selectedIndices: indices };
+  }, [selectedTurf, selectedDate, duration, selectedSlotId]);
+
+  const canContinue = selectedTurf && selectedDate && combinedSlot;
 
   const handleContinue = () => {
     if (!canContinue) return;
     navigate('/details', {
-      state: { turf: selectedTurf, date: selectedDate.toISOString(), duration, slot: selectedSlot },
+      state: { turf: selectedTurf, date: selectedDate.toISOString(), duration, slot: combinedSlot },
     });
   };
 
@@ -111,7 +134,7 @@ export default function BookingPage() {
               <div
                 key={turf.id}
                 className={`turf-card card ${selectedTurf?.id === turf.id ? 'turf-card--selected' : ''}`}
-                onClick={() => { setSelectedTurf(turf); setSelectedSlot(null); }}
+                onClick={() => { setSelectedTurf(turf); setSelectedSlotId(null); }}
               >
                 <div className="turf-card__header">
                   <div>
@@ -158,7 +181,7 @@ export default function BookingPage() {
                     <button
                       key={date.toISOString()}
                       className={`date-cell${isSelected ? ' date-cell--selected' : ''}${isSunday ? ' date-cell--sunday' : ''}${isToday ? ' date-cell--today' : ''}`}
-                      onClick={() => { setSelectedDate(date); setSelectedSlot(null); }}
+                      onClick={() => { setSelectedDate(date); setSelectedSlotId(null); }}
                     >
                       <span className="date-cell__num">{date.getDate()}</span>
                       <span className="date-cell__month">{MONTHS[date.getMonth()]}</span>
@@ -178,7 +201,7 @@ export default function BookingPage() {
               <button
                 key={d.value}
                 className={`duration-pill ${duration === d.value ? 'duration-pill--selected' : ''}`}
-                onClick={() => { setDuration(d.value); setSelectedSlot(null); }}
+                onClick={() => { setDuration(d.value); setSelectedSlotId(null); }}
               >
                 {d.label}
               </button>
@@ -192,19 +215,26 @@ export default function BookingPage() {
             <h2 className="section-heading">Select Time Slots ({duration} {duration === 1 ? 'hour' : 'hours'})</h2>
             <div className="slots-grid-wrap">
               <div className="slots-grid">
-                {slots.map((slot) => {
+                {slots.map((slot, index) => {
                   const label = `${fmtCompact(slot.time)} to ${fmtCompact(slot.endTime)}`;
-                  const isSelected = selectedSlot?.id === slot.id;
+                  const isSelected = selectedIndices.includes(index);
+                  
+                  // Can this slot be selected? Check if it has enough consecutive available slots
+                  const chunk = slots.slice(index, index + duration);
+                  const isSelectable = chunk.length === duration && !chunk.some(c => c.isBooked);
+
                   return (
                     <button
                       key={slot.id}
-                      className={`slot-card${slot.isBooked ? ' slot-card--booked' : ''}${isSelected ? ' slot-card--selected' : ''}`}
-                      disabled={slot.isBooked}
-                      onClick={() => setSelectedSlot(slot)}
+                      className={`slot-card${slot.isBooked || !isSelectable ? ' slot-card--booked' : ''}${isSelected ? ' slot-card--selected' : ''}`}
+                      disabled={slot.isBooked || !isSelectable}
+                      onClick={() => setSelectedSlotId(slot.id)}
                     >
                       <span className="slot-card__time">{label}</span>
                       {slot.isBooked ? (
                         <span className="badge-booked">Booked</span>
+                      ) : !isSelectable ? (
+                        <span className="badge-booked" style={{color: 'var(--text-muted)'}}>N/A</span>
                       ) : (
                         <span className="slot-card__price">₹{slot.price}/hr</span>
                       )}
@@ -222,11 +252,11 @@ export default function BookingPage() {
 
         {/* Continue */}
         <div className="booking-page__footer">
-          {selectedSlot && (
+          {combinedSlot && (
             <div className="selected-summary">
               <span className="selected-summary__label">Selected:</span>
               <span className="selected-summary__value">
-                {selectedTurf?.name} · {fmtCompact(selectedSlot.time)} to {fmtCompact(selectedSlot.endTime)} · <strong>₹{selectedSlot.price}</strong>
+                {selectedTurf?.name} · {fmtCompact(combinedSlot.time)} to {fmtCompact(combinedSlot.endTime)} · <strong>₹{combinedSlot.price}</strong>
               </span>
             </div>
           )}

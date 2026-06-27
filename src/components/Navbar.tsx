@@ -25,7 +25,7 @@ export default function Navbar({ transparent = false }: NavbarProps) {
       <div className="navbar__inner container">
         <Link to="/" className="navbar__logo">
           <span className="navbar__logo-icon">⚽</span>
-          <span className="navbar__logo-text serif">TurfNine</span>
+          <span className="navbar__logo-text serif">BookMyTurf</span>
         </Link>
 
         <div className="navbar__links">

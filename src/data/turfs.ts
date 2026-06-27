@@ -30,7 +30,7 @@ export const TURFS: Turf[] = [
   },
 ];
 
-export function generateSlots(turf: Turf, date: Date, durationHours: number): import('../types').TimeSlot[] {
+export function generateSlots(turf: Turf, date: Date): import('../types').TimeSlot[] {
   const slots: import('../types').TimeSlot[] = [];
   // Pre-booked slots for demo
   const bookedTimes = ['11:00 AM', '06:00 PM', '07:00 PM'];
@@ -58,7 +58,7 @@ export function generateSlots(turf: Turf, date: Date, durationHours: number): im
   for (const slot of hours) {
     const isPrime = slot.h >= 17;
     const price = isPrime ? turf.eveningPrice : turf.morningPrice;
-    const endH = slot.h + durationHours;
+    const endH = slot.h + 1;
     const endLabel =
       endH >= 24
         ? `${String(endH - 24).padStart(2, '0')}:00 AM`
@@ -70,7 +70,7 @@ export function generateSlots(turf: Turf, date: Date, durationHours: number): im
       id: `${date.toISOString()}-${slot.label}`,
       time: slot.label,
       endTime: endLabel,
-      price: Math.round(price * durationHours),
+      price: Math.round(price),
       isBooked: bookedTimes.includes(slot.label),
       isPrime,
     });
