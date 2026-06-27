@@ -86,7 +86,23 @@
   height: 100%;
   background: var(--burgundy);
   border-radius: 3px;
-  transition: width 1s linear;
+  transition: width 1s linear, background-color 0.5s ease;
+}
+
+@keyframes pulseRedText {
+  0% { color: var(--burgundy); transform: scale(1); }
+  50% { color: #d32f2f; transform: scale(1.05); }
+  100% { color: var(--burgundy); transform: scale(1); }
+}
+
+.countdown-timer--pulse {
+  animation: pulseRedText 1s infinite;
+  color: #d32f2f;
+}
+
+.countdown-bar-fill--urgent {
+  background: #d32f2f !important;
+  box-shadow: 0 0 12px rgba(211, 47, 47, 0.4);
 }
 
 .countdown-note {

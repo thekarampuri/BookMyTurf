@@ -140,12 +140,18 @@ export default function DetailsPage() {
                 <div className="form-group">
                   <label className="form-label">Phone Number *</label>
                   <input
-                    className={`form-input${errors.phone ? ' form-input--error' : ''}`}
+                    className={`form-input${errors.phone ? ' form-input--error' : (details.phone.length === 10 && /^[6-9]\d{9}$/.test(details.phone) ? ' form-input--valid' : '')}`}
                     type="tel"
                     placeholder="Enter your 10-digit mobile number"
                     maxLength={10}
                     value={details.phone}
-                    onChange={(e) => setDetails({ ...details, phone: e.target.value.replace(/\D/g, '') })}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      setDetails({ ...details, phone: val });
+                      if (val.length === 10 && /^[6-9]\d{9}$/.test(val)) {
+                        setErrors(prev => ({ ...prev, phone: undefined }));
+                      }
+                    }}
                   />
                   {errors.phone && <span className="form-error">{errors.phone}</span>}
                 </div>

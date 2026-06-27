@@ -51,6 +51,25 @@
   gap: 1.5rem;
 }
 
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-dusty-pink-xlight);
+  color: var(--text-dark);
+  font-size: 1.1rem;
+  transition: all var(--t-fast);
+  border: none;
+  cursor: pointer;
+}
+.theme-toggle:hover {
+  background: var(--dusty-pink);
+  transform: scale(1.05);
+}
+
 .navbar__link {
   text-decoration: none;
   font-size: 0.95rem;

@@ -35,16 +35,19 @@ export default function PaymentPage() {
 
   const [secondsLeft, setSecondsLeft] = useState(TOTAL_SECONDS);
   const [expired, setExpired] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleExpire = useCallback(() => {
     setExpired(true);
   }, []);
 
   useEffect(() => {
+    if (isSuccess || isProcessing) return;
     if (secondsLeft <= 0) { handleExpire(); return; }
     const t = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(t);
-  }, [secondsLeft, handleExpire]);
+  }, [secondsLeft, handleExpire, isSuccess, isProcessing]);
 
   if (!ps) {
     return (
@@ -66,8 +69,11 @@ export default function PaymentPage() {
   const fmt = (t: string) => t.replace(':00 ', '').replace(/^0/, '');
 
   const handlePay = () => {
-    // In production: redirect to Cashfree payment gateway
-    alert(`Redirecting to Cashfree payment of ₹${advanceAmount}...`);
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setIsSuccess(true);
+    }, 2000);
   };
 
   return (
@@ -76,7 +82,29 @@ export default function PaymentPage() {
       <BookingStepper currentStep={3} />
 
       <div className="payment-page container">
-        {expired ? (
+        {isSuccess ? (
+          <div className="expired-card card" style={{ borderColor: '#2e7d32', backgroundColor: 'rgba(46, 125, 50, 0.05)' }}>
+            <div className="expired-card__icon">✅</div>
+            <h2 className="expired-card__title serif" style={{ color: '#2e7d32' }}>Booking Confirmed!</h2>
+            <p className="expired-card__desc">
+              Your payment of ₹{advanceAmount} was successful. A confirmation email has been sent to {userDetails.email || 'your email'}.
+            </p>
+            <div className="payment-details__rows" style={{ marginTop: '1.5rem', marginBottom: '1.5rem', textAlign: 'left', width: '100%' }}>
+              <div className="payment-detail-row">
+                <span>Field:</span><span style={{ fontWeight: 600 }}>{turf.name}</span>
+              </div>
+              <div className="payment-detail-row">
+                <span>Date:</span><span>{bookingDate.toLocaleDateString('en-IN')}</span>
+              </div>
+              <div className="payment-detail-row">
+                <span>Time:</span><span>{fmt(slot.time)} to {fmt(slot.endTime)}</span>
+              </div>
+            </div>
+            <button className="btn btn-primary btn-lg" onClick={() => navigate('/')}>
+              Back to Home
+            </button>
+          </div>
+        ) : expired ? (
           <div className="expired-card card">
             <div className="expired-card__icon">⏰</div>
             <h2 className="expired-card__title serif">Slot Hold Expired</h2>
@@ -104,11 +132,11 @@ export default function PaymentPage() {
               <div className="countdown-wrap">
                 <div className="countdown-header">
                   <span className="countdown-label">Complete Payment Within</span>
-                  <span className="countdown-timer">{minutes}:{seconds}</span>
+                  <span className={`countdown-timer ${secondsLeft < 120 ? 'countdown-timer--pulse' : ''}`}>{minutes}:{seconds}</span>
                 </div>
                 <div className="countdown-bar-track">
                   <div
-                    className="countdown-bar-fill"
+                    className={`countdown-bar-fill ${secondsLeft < 120 ? 'countdown-bar-fill--urgent' : ''}`}
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -148,8 +176,12 @@ export default function PaymentPage() {
               </div>
 
               {/* Pay Button */}
-              <button className="btn btn-primary btn-lg payment-pay-btn" onClick={handlePay}>
-                💳 Pay ₹{advanceAmount} Securely
+              <button 
+                className="btn btn-primary btn-lg payment-pay-btn" 
+                onClick={handlePay}
+                disabled={isProcessing}
+              >
+                {isProcessing ? '🔄 Processing Payment...' : `💳 Pay ₹${advanceAmount} Securely`}
               </button>
 
               {/* Security Note */}
@@ -168,10 +200,15 @@ export default function PaymentPage() {
               </div>
             </div>
             
-            {/* Back */}
-            <div style={{ marginTop: '1.5rem', width: '100%', maxWidth: '520px', display: 'flex', justifyContent: 'flex-start' }}>
-              <button className="btn btn-outlined" style={{ padding: '0.6rem 2rem' }} onClick={() => navigate('/details', { state: ps })}>
-                Back
+            {/* Cancel */}
+            <div style={{ marginTop: '1.5rem', width: '100%', maxWidth: '520px', display: 'flex', justifyContent: 'center' }}>
+              <button 
+                className="btn" 
+                style={{ color: '#c0392b', fontSize: '0.9rem', padding: '0.5rem 1rem' }} 
+                onClick={() => navigate('/details', { state: ps })}
+                disabled={isProcessing}
+              >
+                Cancel Booking
               </button>
             </div>
           </div>

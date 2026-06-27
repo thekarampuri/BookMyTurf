@@ -18,36 +18,14 @@ const DURATIONS = [
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-function get3WeekGrid(): (Date | null)[][] {
+function getFlatDates(days: number = 21): Date[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
-  // Build 3 weeks (21 days) starting from today
-  const allDates: Date[] = [];
-  for (let i = 0; i < 21; i++) {
+  return Array.from({ length: days }, (_, i) => {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
-    allDates.push(d);
-  }
-
-  // Pad the start so first date aligns to its weekday column
-  const firstDay = allDates[0].getDay(); // 0=Sun
-  const grid: (Date | null)[][] = [];
-  let row: (Date | null)[] = Array(firstDay).fill(null);
-
-  for (const d of allDates) {
-    row.push(d);
-    if (row.length === 7) {
-      grid.push(row);
-      row = [];
-    }
-  }
-  // Pad last row
-  if (row.length > 0) {
-    while (row.length < 7) row.push(null);
-    grid.push(row);
-  }
-  return grid;
+    return d;
+  });
 }
 
 // Format "06:00 AM" → "6AM"
@@ -64,7 +42,7 @@ export default function BookingPage() {
   const [duration, setDuration] = useState<number>(1);
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
 
-  const grid = useMemo(() => get3WeekGrid(), []);
+  const dates = useMemo(() => getFlatDates(), []);
   
   const { slots, combinedSlot, selectedIndices } = useMemo(() => {
     if (!selectedTurf) return { slots: [], combinedSlot: null, selectedIndices: [] };
@@ -129,7 +107,7 @@ export default function BookingPage() {
           {/* Section 1: Choose Turf */}
         <section className="booking-section">
           <h2 className="section-heading">Choose Turf</h2>
-          <div className="turf-cards">
+          <div className={`turf-carousel ${selectedTurf ? 'turf-carousel--has-selection' : ''}`}>
             {TURFS.map((turf) => (
               <div
                 key={turf.id}
@@ -159,37 +137,26 @@ export default function BookingPage() {
           </div>
         </section>
 
-        {/* Section 2: Select Date — 7-column calendar grid */}
+        {/* Section 2: Select Date — Horizontal Carousel */}
         <section className="booking-section">
           <h2 className="section-heading">Select Date</h2>
-          <div className="cal-grid-wrap">
-            {/* Day headers */}
-            <div className="cal-header">
-              {DAYS.map((d) => (
-                <span key={d} className={`cal-header__day ${d === 'Sun' ? 'cal-header__day--sun' : ''}`}>{d}</span>
-              ))}
-            </div>
-            {/* Date rows */}
-            {grid.map((week, wi) => (
-              <div key={wi} className="cal-row">
-                {week.map((date, di) => {
-                  if (!date) return <div key={di} className="date-cell date-cell--empty" />;
-                  const isSunday = date.getDay() === 0;
-                  const isToday = date.getTime() === today.getTime();
-                  const isSelected = selectedDate.getTime() === date.getTime();
-                  return (
-                    <button
-                      key={date.toISOString()}
-                      className={`date-cell${isSelected ? ' date-cell--selected' : ''}${isSunday ? ' date-cell--sunday' : ''}${isToday ? ' date-cell--today' : ''}`}
-                      onClick={() => { setSelectedDate(date); setSelectedSlotId(null); }}
-                    >
-                      <span className="date-cell__num">{date.getDate()}</span>
-                      <span className="date-cell__month">{MONTHS[date.getMonth()]}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+          <div className="date-carousel">
+            {dates.map((date) => {
+              const isToday = date.getTime() === today.getTime();
+              const isSelected = selectedDate.getTime() === date.getTime();
+              const dayStr = isToday ? 'Today' : DAYS[date.getDay()];
+              return (
+                <button
+                  key={date.toISOString()}
+                  className={`date-carousel-btn${isSelected ? ' date-carousel-btn--selected' : ''}`}
+                  onClick={() => { setSelectedDate(date); setSelectedSlotId(null); }}
+                >
+                  <span className="date-carousel-btn__day">{dayStr}</span>
+                  <span className="date-carousel-btn__num">{date.getDate()}</span>
+                  <span className="date-carousel-btn__month">{MONTHS[date.getMonth()]}</span>
+                </button>
+              );
+            })}
           </div>
         </section>
 
@@ -222,11 +189,18 @@ export default function BookingPage() {
                   // Can this slot be selected? Check if it has enough consecutive available slots
                   const chunk = slots.slice(index, index + duration);
                   const isSelectable = chunk.length === duration && !chunk.some(c => c.isBooked);
+                  
+                  let positionClass = '';
+                  if (isSelected && duration > 1) {
+                    if (index === selectedIndices[0]) positionClass = ' slot-card--selected-start';
+                    else if (index === selectedIndices[selectedIndices.length - 1]) positionClass = ' slot-card--selected-end';
+                    else positionClass = ' slot-card--selected-middle';
+                  }
 
                   return (
                     <button
                       key={slot.id}
-                      className={`slot-card${slot.isBooked || !isSelectable ? ' slot-card--booked' : ''}${isSelected ? ' slot-card--selected' : ''}`}
+                      className={`slot-card${slot.isBooked || !isSelectable ? ' slot-card--booked' : ''}${isSelected ? ' slot-card--selected' : ''}${positionClass}`}
                       disabled={slot.isBooked || !isSelectable}
                       onClick={() => setSelectedSlotId(slot.id)}
                     >
@@ -250,28 +224,29 @@ export default function BookingPage() {
           </div>
         )}
 
-        {/* Continue */}
-        <div className="booking-page__footer">
-          {combinedSlot && (
-            <div className="selected-summary">
-              <span className="selected-summary__label">Selected:</span>
-              <span className="selected-summary__value">
-                {selectedTurf?.name} · {fmtCompact(combinedSlot.time)} to {fmtCompact(combinedSlot.endTime)} · <strong>₹{combinedSlot.price}</strong>
-              </span>
-            </div>
-          )}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-            <button
-              className="btn btn-primary btn-lg booking-continue-btn"
-              disabled={!canContinue}
-              onClick={handleContinue}
-              style={{ padding: '0.6rem 3rem' }}
-            >
-              Continue
-            </button>
-          </div>
-        </div>
         </div> {/* End of booking-main-card */}
+        
+        {/* Sticky Floating Footer */}
+        {combinedSlot && (
+          <div className="floating-summary-bar">
+            <div className="floating-summary-bar__inner">
+              <div className="floating-summary-bar__info">
+                <span className="floating-summary-bar__label">Selected:</span>
+                <span className="floating-summary-bar__value">
+                  {selectedTurf?.name} · {fmtCompact(combinedSlot.time)} to {fmtCompact(combinedSlot.endTime)}
+                </span>
+                <span className="floating-summary-bar__price">₹{combinedSlot.price}</span>
+              </div>
+              <button
+                className="btn btn-primary btn-lg booking-continue-btn"
+                disabled={!canContinue}
+                onClick={handleContinue}
+              >
+                Continue →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ interface NavbarProps {
 
 export default function Navbar({ transparent = false }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [isDark, setIsDark] = useState(() => document.documentElement.getAttribute('data-theme') === 'dark');
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -17,6 +18,17 @@ export default function Navbar({ transparent = false }: NavbarProps) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [transparent]);
+
+  const toggleTheme = () => {
+    const newTheme = isDark ? 'light' : 'dark';
+    setIsDark(!isDark);
+    if (newTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    localStorage.setItem('theme', newTheme);
+  };
 
   const isHero = transparent && !scrolled;
 
@@ -29,6 +41,9 @@ export default function Navbar({ transparent = false }: NavbarProps) {
         </Link>
 
         <div className="navbar__links">
+          <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
+            {isDark ? '☀️' : '🌙'}
+          </button>
           <Link to="/" className={`navbar__link ${location.pathname === '/' ? 'active' : ''}`}>
             Home
           </Link>
