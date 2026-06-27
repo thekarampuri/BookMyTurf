@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import BookingStepper from '../components/BookingStepper';
 import type { Turf, TimeSlot } from '../types';
+import './PaymentPage.css';
 
 interface UserInfo {
   name: string;
@@ -12,7 +13,6 @@ interface UserInfo {
   eventType?: string;
   specialRequests?: string;
 }
-import './PaymentPage.css';
 
 interface LocationState {
   turf: Turf;
@@ -88,88 +88,90 @@ export default function PaymentPage() {
             </button>
           </div>
         ) : (
-          <div className="payment-card card">
-            {/* Icon */}
-            <div className="payment-card__icon-wrap">
-              <div className="payment-card__icon">💳</div>
-            </div>
-
-            <h1 className="payment-card__title serif">Complete Your Payment</h1>
-            <p className="payment-card__subtitle">
-              Pay the advance to confirm your booking instantly.
-            </p>
-
-            {/* Countdown */}
-            <div className="countdown-wrap">
-              <div className="countdown-header">
-                <span className="countdown-label">Complete Payment Within</span>
-                <span className="countdown-timer">{minutes}:{seconds}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+            <div className="payment-card card">
+              {/* Icon */}
+              <div className="payment-card__icon-wrap">
+                <div className="payment-card__icon">💳</div>
               </div>
-              <div className="countdown-bar-track">
-                <div
-                  className="countdown-bar-fill"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <p className="countdown-note">
-                ⚡ Your slot will be auto-released after this timer expires.
+
+              <h1 className="payment-card__title serif">Complete Payment</h1>
+              <p className="payment-card__subtitle">
+                Secure advance payment for your turf booking
               </p>
-            </div>
 
-            {/* Booking Details */}
-            <div className="payment-details">
-              <h3 className="payment-details__heading">Booking Details</h3>
-              <div className="payment-details__rows">
-                <div className="payment-detail-row">
-                  <span>Field:</span><span style={{ color: 'var(--burgundy)', fontWeight: 600 }}>{turf.name}</span>
+              {/* Countdown */}
+              <div className="countdown-wrap">
+                <div className="countdown-header">
+                  <span className="countdown-label">Complete Payment Within</span>
+                  <span className="countdown-timer">{minutes}:{seconds}</span>
                 </div>
-                <div className="payment-detail-row">
-                  <span>Date:</span><span>{bookingDate.toLocaleDateString('en-IN')}</span>
+                <div className="countdown-bar-track">
+                  <div
+                    className="countdown-bar-fill"
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
-                <div className="payment-detail-row">
-                  <span>Time:</span><span>{fmt(slot.time)} to {fmt(slot.endTime)}</span>
-                </div>
-                <div className="payment-detail-row">
-                  <span>Customer:</span><span>{userDetails.name}</span>
+                <p className="countdown-note" style={{ textAlign: 'center', marginTop: '0.25rem' }}>
+                  Your slot is temporarily reserved. Complete payment to confirm your booking.
+                </p>
+              </div>
+
+              {/* Booking Details */}
+              <div className="payment-details">
+                <h3 className="payment-details__heading">Booking Details</h3>
+                <div className="payment-details__rows">
+                  <div className="payment-detail-row">
+                    <span>Field:</span><span style={{ color: 'var(--burgundy)', fontWeight: 600 }}>{turf.name}</span>
+                  </div>
+                  <div className="payment-detail-row">
+                    <span>Date:</span><span>{bookingDate.toLocaleDateString('en-IN')}</span>
+                  </div>
+                  <div className="payment-detail-row">
+                    <span>Time:</span><span>{fmt(slot.time)} to {fmt(slot.endTime)}</span>
+                  </div>
+                  <div className="payment-detail-row">
+                    <span>Customer:</span><span>{userDetails.name}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Advance highlight */}
-            <div className="advance-highlight">
-              <div className="advance-highlight__row">
-                <span className="advance-highlight__label">Advance Payment (25%)</span>
-                <span className="advance-highlight__amount">₹{advanceAmount}</span>
+              {/* Advance highlight */}
+              <div className="advance-highlight">
+                <div className="advance-highlight__row">
+                  <span className="advance-highlight__label">Advance Payment (25%)</span>
+                  <span className="advance-highlight__amount">₹{advanceAmount}</span>
+                </div>
+                <p className="advance-highlight__note">
+                  Remaining amount to be paid at the turf
+                </p>
               </div>
-              <p className="advance-highlight__note">
-                Remaining ₹{remainingAmount} to be paid at the turf.
+
+              {/* Pay Button */}
+              <button className="btn btn-primary btn-lg payment-pay-btn" onClick={handlePay}>
+                💳 Pay ₹{advanceAmount} Securely
+              </button>
+
+              {/* Security Note */}
+              <p className="payment-security-note">
+                🔒 Secured by Cashfree · Your payment information is encrypted and secure
               </p>
-            </div>
 
-            {/* Pay Button */}
-            <button className="btn btn-primary btn-lg payment-pay-btn" onClick={handlePay}>
-              💳 Pay ₹{advanceAmount} Securely
-            </button>
-
-            {/* Security Note */}
-            <p className="payment-security-note">
-              🔒 Secured by Cashfree · 256-bit SSL encryption
-            </p>
-
-            {/* Payment Methods */}
-            <div className="payment-methods">
-              <p className="payment-methods__label">Accepted</p>
-              <div className="payment-methods__pills">
-                {PAYMENT_METHODS.map((m) => (
-                  <span key={m} className="payment-method-pill">{m}</span>
-                ))}
+              {/* Payment Methods */}
+              <div className="payment-methods">
+                <p className="payment-methods__label">Accepted Payment Methods:</p>
+                <div className="payment-methods__pills">
+                  {PAYMENT_METHODS.map((m) => (
+                    <span key={m} className="payment-method-pill">{m}</span>
+                  ))}
+                </div>
               </div>
             </div>
-
+            
             {/* Back */}
-            <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
-              <button className="btn btn-outlined" onClick={() => navigate('/details', { state: ps })}>
-                ← Back
+            <div style={{ marginTop: '1.5rem', width: '100%', maxWidth: '520px', display: 'flex', justifyContent: 'flex-start' }}>
+              <button className="btn btn-outlined" style={{ padding: '0.6rem 2rem' }} onClick={() => navigate('/details', { state: ps })}>
+                Back
               </button>
             </div>
           </div>

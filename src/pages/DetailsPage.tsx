@@ -106,7 +106,7 @@ export default function DetailsPage() {
 
       <div className="details-page container">
         <div className="details-layout">
-          {/* ── FORM ── */}
+          {/* ── MAIN CARD ── */}
           <div className="details-form-wrap">
             <div className="details-form card">
               <h2 className="details-form__heading">Your Details</h2>
@@ -218,44 +218,32 @@ export default function DetailsPage() {
                 </label>
                 {errors.agreedToTerms && <span className="form-error">{errors.agreedToTerms}</span>}
               </div>
-            </div>
+              
+              {/* Booking Summary - Inline */}
+              <div className="booking-summary-box">
+                <BookingSummary
+                  turf={turf}
+                  bookingDate={bookingDate}
+                  slot={slot}
+                  duration={duration}
+                  totalAmount={totalAmount}
+                  advanceAmount={advanceAmount}
+                  remainingAmount={remainingAmount}
+                  fmt={fmt}
+                />
+              </div>
 
-            {/* Booking Summary (below form on mobile) */}
-            <div className="booking-summary card-sand details-summary-mobile">
-              <BookingSummary
-                turf={turf}
-                bookingDate={bookingDate}
-                slot={slot}
-                duration={duration}
-                totalAmount={totalAmount}
-                advanceAmount={advanceAmount}
-                remainingAmount={remainingAmount}
-                fmt={fmt}
-              />
-            </div>
+            </div> {/* End details-form card */}
 
             <div className="details-actions">
               <button className="btn btn-outlined" onClick={() => navigate('/booking')}>
                 Back
               </button>
-              <button className="btn btn-primary btn-lg" onClick={handleSubmit}>
-                💳 Pay Advance &amp; Confirm
+              <button className="btn btn-primary btn-lg" onClick={handleSubmit} style={{ padding: '0.75rem 2.5rem' }}>
+                Pay Advance &amp; Confirm
               </button>
             </div>
-          </div>
-
-          {/* ── SUMMARY SIDEBAR ── */}
-          <div className="booking-summary card-sand details-summary-desktop">
-            <BookingSummary
-              turf={turf}
-              bookingDate={bookingDate}
-              slot={slot}
-              duration={duration}
-              totalAmount={totalAmount}
-              advanceAmount={advanceAmount}
-              remainingAmount={remainingAmount}
-              fmt={fmt}
-            />
+            
           </div>
         </div>
       </div>

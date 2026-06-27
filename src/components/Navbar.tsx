@@ -25,18 +25,19 @@ export default function Navbar({ transparent = false }: NavbarProps) {
       <div className="navbar__inner container">
         <Link to="/" className="navbar__logo">
           <span className="navbar__logo-icon">⚽</span>
-          <span className="navbar__logo-text">TurfSpot</span>
+          <span className="navbar__logo-text serif">TurfNine</span>
         </Link>
 
         <div className="navbar__links">
           <Link to="/" className={`navbar__link ${location.pathname === '/' ? 'active' : ''}`}>
             Home
           </Link>
-          <Link to="/booking" className={`navbar__link ${location.pathname === '/booking' ? 'active' : ''}`}>
-            Turfs
+          <a href="#about" className="navbar__link">About</a>
+          <Link to="/booking" className={`navbar__link ${location.pathname.startsWith('/booking') || location.pathname.startsWith('/details') || location.pathname.startsWith('/payment') ? 'active' : ''}`}>
+            Booking
           </Link>
-          <a href="#features" className="navbar__link">About</a>
-          <button className="btn btn-primary" onClick={() => navigate('/booking')}>
+          <a href="#contact" className="navbar__link">Contact</a>
+          <button className="btn btn-primary btn-nav" onClick={() => navigate('/booking')}>
             Book Now
           </button>
         </div>

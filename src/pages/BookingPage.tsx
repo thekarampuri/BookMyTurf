@@ -96,12 +96,14 @@ export default function BookingPage() {
         <div className="contact-banner">
           <span className="contact-banner__label">📞 For Booking Assistance Contact:</span>
           <div className="contact-banner__numbers">
-            <span>☎ <strong>+91 78220 08270</strong></span>
-            <span>☎ <strong>+91 73879 54545</strong></span>
+            <span>☎ <span style={{ color: '#8C7B75' }}>7822008270</span></span>
+            <span>☎ <span style={{ color: '#8C7B75' }}>7387954545</span></span>
           </div>
         </div>
 
-        {/* Section 1: Choose Turf */}
+        {/* ── MAIN BOOKING CARD ── */}
+        <div className="booking-main-card card">
+          {/* Section 1: Choose Turf */}
         <section className="booking-section">
           <h2 className="section-heading">Choose Turf</h2>
           <div className="turf-cards">
@@ -228,14 +230,18 @@ export default function BookingPage() {
               </span>
             </div>
           )}
-          <button
-            className="btn btn-primary btn-lg booking-continue-btn"
-            disabled={!canContinue}
-            onClick={handleContinue}
-          >
-            Continue
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+            <button
+              className="btn btn-primary btn-lg booking-continue-btn"
+              disabled={!canContinue}
+              onClick={handleContinue}
+              style={{ padding: '0.6rem 3rem' }}
+            >
+              Continue
+            </button>
+          </div>
         </div>
+        </div> {/* End of booking-main-card */}
       </div>
     </div>
   );
