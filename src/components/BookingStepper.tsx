@@ -7,9 +7,10 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  { number: 1, label: 'Choose Slot', icon: '📅' },
+  { number: 1, label: 'Choose Time', icon: '📅' },
   { number: 2, label: 'Your Details', icon: '👤' },
   { number: 3, label: 'Payment', icon: '💳' },
+  { number: 4, label: 'Confirmation', icon: '✅' },
 ];
 
 interface BookingStepperProps {
@@ -30,7 +31,6 @@ export default function BookingStepper({ currentStep }: BookingStepperProps) {
               {isCompleted ? '✓' : step.icon}
             </div>
             <div className="stepper__label-wrap">
-              <span className="stepper__step-num">Step {step.number}</span>
               <span className={`stepper__label ${isActive ? 'active' : ''} ${isUpcoming ? 'upcoming' : ''}`}>
                 {step.label}
               </span>

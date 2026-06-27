@@ -2,7 +2,16 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import BookingStepper from '../components/BookingStepper';
-import type { Turf, TimeSlot, UserDetails } from '../types';
+import type { Turf, TimeSlot } from '../types';
+
+interface UserInfo {
+  name: string;
+  phone: string;
+  email?: string;
+  participants?: string;
+  eventType?: string;
+  specialRequests?: string;
+}
 import './PaymentPage.css';
 
 interface LocationState {
@@ -10,7 +19,7 @@ interface LocationState {
   date: string;
   duration: number;
   slot: TimeSlot;
-  userDetails: UserDetails;
+  userDetails: UserInfo;
   advanceAmount: number;
   totalAmount: number;
 }
@@ -54,6 +63,7 @@ export default function PaymentPage() {
   const progress = ((TOTAL_SECONDS - secondsLeft) / TOTAL_SECONDS) * 100;
   const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
   const seconds = String(secondsLeft % 60).padStart(2, '0');
+  const fmt = (t: string) => t.replace(':00 ', '').replace(/^0/, '');
 
   const handlePay = () => {
     // In production: redirect to Cashfree payment gateway
@@ -92,7 +102,7 @@ export default function PaymentPage() {
             {/* Countdown */}
             <div className="countdown-wrap">
               <div className="countdown-header">
-                <span className="countdown-label">Slot held for</span>
+                <span className="countdown-label">Complete Payment Within</span>
                 <span className="countdown-timer">{minutes}:{seconds}</span>
               </div>
               <div className="countdown-bar-track">
@@ -111,20 +121,16 @@ export default function PaymentPage() {
               <h3 className="payment-details__heading">Booking Details</h3>
               <div className="payment-details__rows">
                 <div className="payment-detail-row">
-                  <span>Name</span><span>{userDetails.name}</span>
+                  <span>Field:</span><span style={{ color: 'var(--burgundy)', fontWeight: 600 }}>{turf.name}</span>
                 </div>
                 <div className="payment-detail-row">
-                  <span>Turf</span>
-                  <span style={{ color: 'var(--burgundy)', fontWeight: 600 }}>{turf.name}</span>
+                  <span>Date:</span><span>{bookingDate.toLocaleDateString('en-IN')}</span>
                 </div>
                 <div className="payment-detail-row">
-                  <span>Date</span><span>{bookingDate.toDateString()}</span>
+                  <span>Time:</span><span>{fmt(slot.time)} to {fmt(slot.endTime)}</span>
                 </div>
                 <div className="payment-detail-row">
-                  <span>Time</span><span>{slot.time} → {slot.endTime}</span>
-                </div>
-                <div className="payment-detail-row">
-                  <span>Full Amount</span><span>₹{totalAmount}</span>
+                  <span>Customer:</span><span>{userDetails.name}</span>
                 </div>
               </div>
             </div>

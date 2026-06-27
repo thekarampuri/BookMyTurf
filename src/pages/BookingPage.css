@@ -1,58 +1,74 @@
 .booking-page {
-  padding-top: 6rem;
+  padding-top: 5.5rem;
   padding-bottom: 4rem;
 }
 
-.booking-page__subtitle {
-  margin-bottom: 2.5rem;
+/* Header */
+.booking-page__header {
+  text-align: center;
+  margin-bottom: 1.75rem;
 }
 
 .booking-page__title {
   font-size: 2.25rem;
-  color: var(--burgundy);
+  color: var(--text-dark);
   margin-bottom: 0.35rem;
 }
 
 .booking-page__desc {
   color: var(--text-muted);
+  font-size: 1rem;
 }
 
 .booking-page__ist {
   font-size: 0.85rem;
   color: var(--dusty-pink);
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
 }
 
 /* Contact Banner */
 .contact-banner {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   background: var(--bg-dusty-pink-xlight);
   border: 1.5px solid var(--border-dusty);
   border-radius: var(--radius-md);
-  padding: 1rem 1.5rem;
-  margin-bottom: 2rem;
+  padding: 0.85rem 1.5rem;
+  margin-bottom: 2.25rem;
+  text-align: center;
+}
+
+.contact-banner__label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--burgundy);
+}
+
+.contact-banner__numbers {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 0.9rem;
   color: var(--text-body);
 }
 
-.contact-banner__icon { font-size: 1.25rem; }
-.contact-banner__text { font-size: 0.95rem; }
-
 /* Section */
 .booking-section {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2.25rem;
 }
 
 /* Turf Cards */
 .turf-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
 }
 
 .turf-card {
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   cursor: pointer;
   transition: all var(--t-norm);
   position: relative;
@@ -61,7 +77,7 @@
 
 .turf-card:hover {
   border-color: var(--dusty-pink);
-  box-shadow: 0 4px 16px rgba(77, 14, 19, 0.08);
+  box-shadow: 0 4px 16px rgba(77, 14, 19, 0.07);
 }
 
 .turf-card--selected {
@@ -77,7 +93,7 @@
 }
 
 .turf-card__name {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   color: var(--burgundy);
   font-family: 'Playfair Display', serif;
   margin-bottom: 0.2rem;
@@ -85,28 +101,26 @@
 
 .turf-card__size {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 
-.turf-card__price-wrap {
-  text-align: right;
-}
+.turf-card__price-wrap { text-align: right; }
 
 .turf-card__price {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--burgundy);
   display: block;
 }
 
 .turf-card__price small {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 400;
   color: var(--text-muted);
 }
 
 .turf-card__price-note {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -115,14 +129,14 @@
 .turf-card__amenities {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .turf-card__amenity {
   font-size: 0.78rem;
   color: var(--burgundy);
   background: var(--bg-dusty-pink-xlight);
-  padding: 0.2rem 0.6rem;
+  padding: 0.2rem 0.55rem;
   border-radius: var(--radius-pill);
 }
 
@@ -132,73 +146,103 @@
   right: 0;
   background: var(--burgundy);
   color: white;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 0.25rem 0.75rem;
+  padding: 0.22rem 0.7rem;
   border-radius: 0 var(--radius-lg) 0 var(--radius-sm);
   letter-spacing: 0.05em;
 }
 
-/* Date Grid */
-.date-grid-wrap {
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
+/* ─── Calendar Grid ─── */
+.cal-grid-wrap {
+  background: white;
+  border: 1.5px solid var(--border-sand);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
-.date-grid {
-  display: flex;
-  gap: 0.75rem;
-  min-width: max-content;
-  padding: 0.5rem 0;
+.cal-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--bg-dusty-pink-xlight);
+  border-bottom: 1px solid var(--border-sand);
+}
+
+.cal-header__day {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 0.6rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cal-header__day--sun {
+  color: var(--dusty-pink);
+}
+
+.cal-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--border-sand);
+}
+
+.cal-row:last-child {
+  border-bottom: none;
 }
 
 .date-cell {
+  aspect-ratio: 1.1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
-  padding: 0.75rem 0.9rem;
-  background: white;
-  border: 1.5px solid var(--border-sand);
-  border-radius: var(--radius-md);
+  justify-content: center;
+  gap: 1px;
+  border-right: 1px solid var(--border-sand);
   cursor: pointer;
-  min-width: 64px;
+  background: white;
   transition: all var(--t-fast);
+  border: none;
+  border-right: 1px solid var(--border-sand);
+  border-bottom: none;
 }
 
-.date-cell:hover {
-  border-color: var(--dusty-pink);
+.date-cell:last-child { border-right: none; }
+
+.date-cell--empty {
+  background: var(--bg-page);
+  cursor: default;
+}
+
+.date-cell:not(.date-cell--empty):not(.date-cell--selected):hover {
   background: var(--bg-dusty-pink-xlight);
 }
 
 .date-cell--today {
-  background: var(--bg-dusty-pink-xlight);
+  background: rgba(216, 196, 172, 0.25);
 }
 
 .date-cell--sunday .date-cell__num,
-.date-cell--sunday .date-cell__day {
-  color: var(--dusty-pink);
+.date-cell--sunday .date-cell__month {
+  color: var(--dusty-pink) !important;
 }
 
 .date-cell--selected {
-  border: 2px solid var(--burgundy) !important;
-  background: var(--burgundy-light);
+  background: var(--burgundy-light) !important;
+  outline: 2px solid var(--burgundy);
+  outline-offset: -2px;
+  border-radius: 4px;
+  z-index: 1;
 }
 
-.date-cell--selected .date-cell__num {
+.date-cell--selected .date-cell__num,
+.date-cell--selected .date-cell__month {
   color: var(--burgundy) !important;
 }
 
-.date-cell__day {
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-}
-
 .date-cell__num {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-dark);
   line-height: 1;
@@ -207,22 +251,24 @@
 .date-cell__month {
   font-size: 0.65rem;
   color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* Duration Pills */
 .duration-pills {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
 }
 
 .duration-pill {
-  padding: 0.6rem 1.75rem;
+  padding: 0.5rem 1.4rem;
   border-radius: var(--radius-pill);
   border: 1.5px solid var(--border-sand);
   background: white;
   color: var(--text-body);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--t-fast);
@@ -240,61 +286,40 @@
 }
 
 /* Slots */
-.slots-legend {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+.slots-grid-wrap {
+  overflow-x: auto;
 }
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.legend-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.dot-available { background: white; border: 2px solid var(--border-sand); }
-.dot-booked { background: var(--booked-bg); border: 2px solid var(--dusty-pink); }
-.dot-selected { background: var(--burgundy-light); border: 2px solid var(--burgundy); }
 
 .slots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.65rem;
+  min-width: 480px;
 }
 
 .slot-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.2rem;
-  padding: 0.9rem 1rem;
+  gap: 0.25rem;
+  padding: 0.75rem 0.9rem;
   background: white;
   border: 1.5px solid var(--border-sand);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   text-align: left;
   transition: all var(--t-fast);
-  position: relative;
 }
 
 .slot-card:not(.slot-card--booked):hover {
   border-color: var(--dusty-pink);
-  box-shadow: 0 2px 8px rgba(77, 14, 19, 0.08);
+  box-shadow: 0 2px 8px rgba(77, 14, 19, 0.07);
 }
 
 .slot-card--booked {
-  background: var(--booked-bg);
+  background: rgba(203, 164, 159, 0.2);
   cursor: not-allowed;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .slot-card--selected {
@@ -303,65 +328,41 @@
 }
 
 .slot-card__time {
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-dark);
 }
 
-.slot-card__end {
-  font-size: 0.78rem;
+.slot-card--booked .slot-card__time {
   color: var(--text-muted);
 }
 
 .slot-card__price {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.78rem;
   color: var(--text-muted);
-  margin-top: 0.2rem;
-}
-
-.slot-card__prime {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  font-size: 0.6rem;
-  font-weight: 700;
-  background: var(--burgundy);
-  color: white;
-  padding: 2px 6px;
-  border-radius: var(--radius-pill);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 /* Footer */
 .booking-page__footer {
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  align-items: stretch;
+  gap: 0.85rem;
 }
 
 .selected-summary {
   background: var(--bg-dusty-pink-xlight);
   border: 1px solid var(--border-dusty);
   border-radius: var(--radius-md);
-  padding: 0.85rem 1.25rem;
+  padding: 0.75rem 1.25rem;
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
-.selected-summary__label {
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.selected-summary__value {
-  color: var(--text-dark);
-}
+.selected-summary__label { color: var(--text-muted); font-weight: 500; }
+.selected-summary__value { color: var(--text-dark); }
 
 .booking-continue-btn {
   width: 100%;
@@ -371,15 +372,15 @@
 .select-turf-prompt {
   text-align: center;
   color: var(--text-muted);
-  padding: 3rem;
+  padding: 2.5rem;
   background: white;
   border: 1.5px dashed var(--border-sand);
   border-radius: var(--radius-lg);
-  font-size: 1rem;
-  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
 }
 
 @media (max-width: 600px) {
-  .slots-grid { grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); }
   .turf-cards { grid-template-columns: 1fr; }
+  .contact-banner__numbers { gap: 1rem; }
 }
