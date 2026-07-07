@@ -3,8 +3,6 @@ import {
   LayoutDashboard, 
   CalendarDays, 
   MapPin, 
-  Users, 
-  Settings, 
   LogOut,
   IndianRupee,
   CheckCircle,
@@ -72,15 +70,6 @@ export default function AdminDashboard() {
         >
           <MapPin size={20} />
           <span>Turf Management</span>
-        </button>
-        {/* Placeholders for future modules */}
-        <button className="admin-nav__item" onClick={() => alert('User Management coming soon!')}>
-          <Users size={20} />
-          <span>Users</span>
-        </button>
-        <button className="admin-nav__item" onClick={() => alert('Settings coming soon!')}>
-          <Settings size={20} />
-          <span>Settings</span>
         </button>
       </nav>
 
