@@ -1,14 +1,14 @@
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background-color: var(--bg-dark);
-  color: var(--text-light);
+  background-color: var(--bg-page);
+  color: var(--text-body);
 }
 
 .admin-sidebar {
   width: 260px;
-  background-color: var(--surface-light);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border-sand);
   display: flex;
   flex-direction: column;
   padding: 1.5rem 1rem;
@@ -20,7 +20,7 @@
 .admin-sidebar__header {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--burgundy);
   margin-bottom: 2rem;
   padding: 0 0.5rem;
   display: flex;
@@ -40,7 +40,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -52,23 +52,28 @@
 }
 
 .admin-nav__item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: var(--text-light);
+  background-color: var(--bg-dusty-pink-xlight);
+  color: var(--text-dark);
 }
 
 .admin-nav__item--active {
-  background-color: rgba(144, 30, 60, 0.15); /* var(--accent) with opacity */
-  color: var(--accent);
+  background-color: var(--burgundy-light);
+  color: var(--burgundy);
   font-weight: 500;
 }
 
 .admin-sidebar__footer {
   margin-top: auto;
+  border-top: 1px solid var(--border-sand);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .admin-main {
   flex-grow: 1;
-  padding: 2rem;
+  padding: 2.5rem;
   overflow-y: auto;
 }
 
@@ -79,7 +84,7 @@
 .admin-header__title {
   font-size: 2rem;
   margin: 0;
-  color: var(--text-light);
+  color: var(--text-dark);
 }
 
 .admin-header__subtitle {
@@ -96,21 +101,22 @@
 }
 
 .stat-card {
-  background-color: var(--surface-light);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-sand);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   display: flex;
   align-items: flex-start;
   gap: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
 }
 
 .stat-card__icon-wrap {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
-  background-color: rgba(144, 30, 60, 0.1);
-  color: var(--accent);
+  border-radius: var(--radius-md);
+  background-color: var(--burgundy-light);
+  color: var(--burgundy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -118,12 +124,17 @@
 
 .stat-card__icon-wrap.success {
   background-color: rgba(46, 125, 50, 0.1);
-  color: #4caf50;
+  color: #2e7d32;
 }
 
 .stat-card__icon-wrap.info {
   background-color: rgba(33, 150, 243, 0.1);
-  color: #2196f3;
+  color: #1976d2;
+}
+
+.stat-card__icon-wrap.warning {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ed6c02;
 }
 
 .stat-card__content {
@@ -133,6 +144,7 @@
 .stat-card__label {
   color: var(--text-muted);
   font-size: 0.875rem;
+  font-weight: 500;
   margin-bottom: 0.25rem;
   display: block;
 }
@@ -140,21 +152,22 @@
 .stat-card__value {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-light);
+  color: var(--text-dark);
   margin: 0;
 }
 
 /* Data Table */
 .data-table-card {
-  background-color: var(--surface-light);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-sand);
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
 }
 
 .data-table-header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-sand);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -163,6 +176,7 @@
 .data-table-header h3 {
   margin: 0;
   font-size: 1.25rem;
+  color: var(--text-dark);
 }
 
 .table-responsive {
@@ -178,18 +192,18 @@
   text-align: left;
   padding: 1rem 1.5rem;
   color: var(--text-muted);
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-weight: 600;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background-color: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-sand);
+  background-color: var(--bg-page);
 }
 
 .admin-table td {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  color: var(--text-light);
+  border-bottom: 1px solid var(--border-sand);
+  color: var(--text-body);
   font-size: 0.95rem;
 }
 
@@ -198,40 +212,40 @@
 }
 
 .admin-table tr:hover td {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: var(--bg-dusty-pink-xlight);
 }
 
 .status-badge {
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.75rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
 }
 
 .status-badge--Confirmed {
-  background-color: rgba(46, 125, 50, 0.15);
-  color: #81c784;
+  background-color: rgba(46, 125, 50, 0.1);
+  color: #2e7d32;
 }
 
 .status-badge--Pending {
   background-color: rgba(255, 152, 0, 0.15);
-  color: #ffb74d;
+  color: #ed6c02;
 }
 
 .status-badge--Cancelled {
-  background-color: rgba(244, 67, 54, 0.15);
-  color: #e57373;
+  background-color: rgba(211, 47, 47, 0.1);
+  color: #d32f2f;
 }
 
 .action-btn {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-light);
+  border: 1px solid var(--border-dusty);
+  color: var(--text-body);
   padding: 0.4rem 0.75rem;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.85rem;
   transition: all 0.2s;
@@ -241,19 +255,20 @@
 }
 
 .action-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--bg-dusty-pink-xlight);
+  color: var(--text-dark);
 }
 
 .action-btn--approve:hover {
-  background-color: rgba(46, 125, 50, 0.2);
-  border-color: rgba(46, 125, 50, 0.5);
-  color: #81c784;
+  background-color: rgba(46, 125, 50, 0.1);
+  border-color: #2e7d32;
+  color: #2e7d32;
 }
 
 .action-btn--cancel:hover {
-  background-color: rgba(244, 67, 54, 0.2);
-  border-color: rgba(244, 67, 54, 0.5);
-  color: #e57373;
+  background-color: rgba(211, 47, 47, 0.1);
+  border-color: #d32f2f;
+  color: #d32f2f;
 }
 
 /* Empty State */

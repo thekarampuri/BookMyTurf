@@ -15,12 +15,16 @@ import { useNavigate } from 'react-router-dom';
 import { MOCK_BOOKINGS } from '../data/bookings';
 import { TURFS } from '../data/turfs';
 import type { Booking, BookingStatus } from '../types';
+import AdminLogin from './AdminLogin';
 import './AdminDashboard.css';
 
 type Tab = 'overview' | 'bookings' | 'turfs';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    sessionStorage.getItem('adminAuth') === 'true'
+  );
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [bookings, setBookings] = useState<Booking[]>(MOCK_BOOKINGS);
 
@@ -81,6 +85,13 @@ export default function AdminDashboard() {
       </nav>
 
       <div className="admin-sidebar__footer">
+        <button className="admin-nav__item" onClick={() => {
+          sessionStorage.removeItem('adminAuth');
+          setIsAuthenticated(false);
+        }}>
+          <LogOut size={20} />
+          <span>Logout</span>
+        </button>
         <button className="admin-nav__item" onClick={() => navigate('/')}>
           <LogOut size={20} />
           <span>Back to Site</span>
@@ -320,6 +331,15 @@ export default function AdminDashboard() {
       </div>
     </div>
   );
+
+  if (!isAuthenticated) {
+    return (
+      <AdminLogin onLogin={() => {
+        sessionStorage.setItem('adminAuth', 'true');
+        setIsAuthenticated(true);
+      }} />
+    );
+  }
 
   return (
     <div className="admin-layout">
