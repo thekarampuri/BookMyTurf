@@ -31,3 +31,18 @@ export interface UserDetails {
   email: string;
   agreedToTerms: boolean;
 }
+
+export type BookingStatus = 'Confirmed' | 'Pending' | 'Cancelled';
+
+export interface Booking {
+  id: string;
+  turfId: string;
+  turfName: string;
+  date: string;
+  time: string;
+  userName: string;
+  userPhone: string;
+  amount: number;
+  status: BookingStatus;
+  createdAt: string;
+}

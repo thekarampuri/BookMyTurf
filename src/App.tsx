@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import HomePage from './pages/HomePage';
 import BookingFlow from './pages/BookingFlow';
+import AdminDashboard from './pages/AdminDashboard';
 
 export default function App() {
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/booking" element={<BookingFlow />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );
