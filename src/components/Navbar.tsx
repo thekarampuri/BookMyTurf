@@ -40,11 +40,12 @@ export default function Navbar({ transparent = false }: NavbarProps) {
           <span className="navbar__logo-text serif">BookMyTurf</span>
         </Link>
 
-        <div className="navbar__links">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
             {isDark ? '☀️' : '🌙'}
           </button>
-          <Link to="/" className={`navbar__link ${location.pathname === '/' ? 'active' : ''}`}>
+          <div className="navbar__links">
+            <Link to="/" className={`navbar__link ${location.pathname === '/' ? 'active' : ''}`}>
             Home
           </Link>
           <a href="#about" className="navbar__link">About</a>
@@ -55,6 +56,7 @@ export default function Navbar({ transparent = false }: NavbarProps) {
           <button className="btn btn-primary btn-nav" onClick={() => navigate('/booking')}>
             Book Now
           </button>
+          </div>
         </div>
       </div>
     </nav>

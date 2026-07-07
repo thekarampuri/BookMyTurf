@@ -47,7 +47,7 @@
 
 /* Countdown */
 .countdown-wrap {
-  background: white;
+  background: var(--bg-card);
   border: 1.5px solid var(--border-sand);
   border-radius: var(--radius-md);
   padding: 1.25rem;

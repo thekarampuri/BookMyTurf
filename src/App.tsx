@@ -1,9 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import HomePage from './pages/HomePage';
-import BookingPage from './pages/BookingPage';
-import DetailsPage from './pages/DetailsPage';
-import PaymentPage from './pages/PaymentPage';
+import BookingFlow from './pages/BookingFlow';
 
 export default function App() {
   useEffect(() => {
@@ -19,9 +17,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/booking" element={<BookingPage />} />
-        <Route path="/details" element={<DetailsPage />} />
-        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/booking" element={<BookingFlow />} />
       </Routes>
     </BrowserRouter>
   );

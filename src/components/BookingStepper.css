@@ -1,9 +1,16 @@
+.stepper-wrap {
+  width: 100%;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border-sand);
+  background: var(--bg-card);
+}
+
 .stepper {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.25rem 1.5rem;
-  background: white;
+  background: var(--bg-card);
   border-bottom: 1px solid var(--border-sand);
   overflow-x: auto;
   gap: 0;

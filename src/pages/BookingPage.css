@@ -105,7 +105,7 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  background: white;
+  background: var(--bg-card);
   border: 1px solid var(--border-sand);
   border-radius: var(--radius-md);
 }
@@ -228,7 +228,7 @@
   padding: 0.8rem 0.5rem;
   border: 1px solid var(--border-sand);
   border-radius: var(--radius-md);
-  background: white;
+  background: var(--bg-card);
   cursor: pointer;
   transition: all var(--t-fast);
   scroll-snap-align: start;
@@ -277,7 +277,7 @@
   padding: 0.4rem 1.2rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-sand);
-  background: white;
+  background: var(--bg-card);
   color: var(--text-body);
   font-size: 0.85rem;
   font-weight: 500;
@@ -293,7 +293,7 @@
 .duration-pill--selected {
   border-color: var(--burgundy) !important;
   color: var(--burgundy) !important;
-  background: white !important;
+  background: var(--bg-card) !important;
   outline: 1px solid var(--burgundy);
 }
 
@@ -304,9 +304,8 @@
 
 .slots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 0.5rem;
-  min-width: 480px;
 }
 
 .slot-card {
@@ -315,7 +314,7 @@
   align-items: center;
   gap: 0.2rem;
   padding: 0.6rem;
-  background: white;
+  background: var(--bg-card);
   border: 1px solid var(--border-sand);
   border-radius: var(--radius-sm);
   cursor: pointer;
@@ -328,9 +327,14 @@
 }
 
 .slot-card--booked {
-  background: rgba(203, 164, 159, 0.1);
+  background: var(--bg-dusty-pink-xlight);
   cursor: not-allowed;
   opacity: 0.8;
+}
+
+.slot-card--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .slot-card--selected {
@@ -386,7 +390,7 @@
   bottom: 0;
   left: 0;
   width: 100%;
-  background: white;
+  background: var(--bg-card);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
   padding: 1rem 0;
   z-index: 100;
