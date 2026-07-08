@@ -30,10 +30,8 @@ export const TURFS: Turf[] = [
   },
 ];
 
-export function generateSlots(turf: Turf, date: Date): import('../types').TimeSlot[] {
+export function generateSlots(turf: Turf, date: Date, bookedTimes: string[] = []): import('../types').TimeSlot[] {
   const slots: import('../types').TimeSlot[] = [];
-  // Pre-booked slots for demo
-  const bookedTimes = ['11:00 AM', '06:00 PM', '07:00 PM'];
 
   const hours = [
     { h: 6, label: '06:00 AM' },

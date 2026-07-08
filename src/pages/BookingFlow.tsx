@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Stepper, { Step } from '../components/Stepper';
 import { TURFS, generateSlots } from '../data/turfs';
+import { getBookingsByDate, createBooking } from '../services/bookingService';
 import type { Turf, TimeSlot } from '../types';
 import './BookingPage.css';
 import './DetailsPage.css';
@@ -79,12 +80,34 @@ export default function BookingFlow() {
   const [selectedDate, setSelectedDate] = useSessionState<Date>('bf_date', today, (v) => new Date(v));
   const [duration, setDuration] = useSessionState<number>('bf_duration', 1);
   const [selectedSlotId, setSelectedSlotId] = useSessionState<string | null>('bf_slot', null);
+  const [dbBookedTimes, setDbBookedTimes] = useState<string[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
 
   const dates = useMemo(() => getFlatDates(), []);
+
+  useEffect(() => {
+    if (!selectedTurf || !selectedDate) return;
+    const fetchBookings = async () => {
+      setIsLoadingSlots(true);
+      try {
+        const dateStr = selectedDate.toISOString().split('T')[0];
+        const bookings = await getBookingsByDate(dateStr);
+        // Find all bookings for THIS turf that are not Cancelled
+        const turfBookings = bookings.filter(b => b.turfId === selectedTurf.id && b.status !== 'Cancelled');
+        // We only extract the start time for simplicity in this demo, but real logic would block duration chunk
+        const booked = turfBookings.map(b => b.time);
+        setDbBookedTimes(booked);
+      } catch (err) {
+        console.error("Failed to fetch slots", err);
+      }
+      setIsLoadingSlots(false);
+    };
+    fetchBookings();
+  }, [selectedTurf, selectedDate]);
   
   const { slots, combinedSlot, selectedIndices } = useMemo(() => {
     if (!selectedTurf) return { slots: [], combinedSlot: null, selectedIndices: [] };
-    const s = generateSlots(selectedTurf, selectedDate);
+    const s = generateSlots(selectedTurf, selectedDate, dbBookedTimes);
     
     let combined: TimeSlot | null = null;
     let indices: number[] = [];
@@ -132,12 +155,28 @@ export default function BookingFlow() {
     return () => clearTimeout(t);
   }, [currentStep, secondsLeft, isProcessing]);
 
-  const handlePay = () => {
+  const handlePay = async () => {
+    if (!selectedTurf || !combinedSlot) return;
     setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      await createBooking({
+        turfId: selectedTurf.id,
+        turfName: selectedTurf.name,
+        date: selectedDate.toISOString().split('T')[0],
+        time: combinedSlot.time,
+        userName: details.name,
+        userPhone: details.phone,
+        amount: combinedSlot.price,
+        status: 'Pending',
+        createdAt: new Date().toISOString()
+      });
       setCurrentStep(4);
-    }, 2000);
+    } catch (err) {
+      console.error("Failed to create booking", err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   // --- Stepper Navigation Control ---
@@ -251,6 +290,8 @@ export default function BookingFlow() {
                 <h2 className="section-heading">Available Slots</h2>
                 {!selectedTurf ? (
                   <p className="select-turf-prompt">Please choose a turf above to see available time slots.</p>
+                ) : isLoadingSlots ? (
+                  <p className="select-turf-prompt">Loading available slots...</p>
                 ) : (
                   <div className="slots-grid-wrap">
                     <div className="slots-grid">

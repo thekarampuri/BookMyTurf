@@ -10,8 +10,8 @@ import {
   XCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { MOCK_BOOKINGS } from '../data/bookings';
 import { TURFS } from '../data/turfs';
+import { subscribeToBookings, updateBookingStatus as updateDbStatus } from '../services/bookingService';
 import type { Booking, BookingStatus } from '../types';
 import AdminLogin from './AdminLogin';
 import './AdminDashboard.css';
@@ -24,7 +24,7 @@ export default function AdminDashboard() {
     sessionStorage.getItem('adminAuth') === 'true'
   );
   const [activeTab, setActiveTab] = useState<Tab>('overview');
-  const [bookings, setBookings] = useState<Booking[]>(MOCK_BOOKINGS);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   // Derived Stats
   const totalRevenue = useMemo(() => {
@@ -36,10 +36,21 @@ export default function AdminDashboard() {
   const totalBookings = bookings.length;
   const pendingBookings = bookings.filter(b => b.status === 'Pending').length;
 
-  const handleStatusChange = (id: string, newStatus: BookingStatus) => {
-    setBookings(prev => 
-      prev.map(b => b.id === id ? { ...b, status: newStatus } : b)
-    );
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const unsubscribe = subscribeToBookings((data) => {
+      setBookings(data);
+    });
+    return () => unsubscribe();
+  }, [isAuthenticated]);
+
+  const handleStatusChange = async (id: string, newStatus: BookingStatus) => {
+    try {
+      await updateDbStatus(id, newStatus);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update status");
+    }
   };
 
   const renderSidebar = () => (
