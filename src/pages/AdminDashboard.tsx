@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   CalendarDays, 
@@ -10,10 +10,12 @@ import {
   XCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { TURFS } from '../data/turfs';
+import { INITIAL_TURFS } from '../data/turfs';
 import { subscribeToBookings, updateBookingStatus as updateDbStatus } from '../services/bookingService';
-import type { Booking, BookingStatus } from '../types';
+import { subscribeToTurfs, seedTurfs, createTurf, updateTurf, deleteTurf } from '../services/turfService';
+import type { Booking, BookingStatus, Turf } from '../types';
 import AdminLogin from './AdminLogin';
+import TurfModal from '../components/TurfModal';
 import './AdminDashboard.css';
 
 type Tab = 'overview' | 'bookings' | 'turfs';
@@ -25,6 +27,9 @@ export default function AdminDashboard() {
   );
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [turfs, setTurfs] = useState<Turf[]>([]);
+  const [isTurfModalOpen, setIsTurfModalOpen] = useState(false);
+  const [editingTurf, setEditingTurf] = useState<Turf | null>(null);
 
   // Derived Stats
   const totalRevenue = useMemo(() => {
@@ -38,10 +43,16 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    const unsubscribe = subscribeToBookings((data) => {
+    const unsubscribeBookings = subscribeToBookings((data) => {
       setBookings(data);
     });
-    return () => unsubscribe();
+    const unsubscribeTurfs = subscribeToTurfs((data) => {
+      setTurfs(data);
+    });
+    return () => {
+      unsubscribeBookings();
+      unsubscribeTurfs();
+    };
   }, [isAuthenticated]);
 
   const handleStatusChange = async (id: string, newStatus: BookingStatus) => {
@@ -144,7 +155,7 @@ export default function AdminDashboard() {
           </div>
           <div className="stat-card__content">
             <span className="stat-card__label">Active Turfs</span>
-            <h3 className="stat-card__value">{TURFS.length}</h3>
+            <h3 className="stat-card__value">{turfs.length}</h3>
           </div>
         </div>
       </div>
@@ -281,6 +292,20 @@ export default function AdminDashboard() {
     </div>
   );
 
+  const handleSaveTurf = async (turfData: Omit<Turf, 'id'>, id?: string) => {
+    if (id) {
+      await updateTurf(id, turfData);
+    } else {
+      await createTurf(turfData);
+    }
+  };
+
+  const handleDeleteTurf = async (id: string) => {
+    if (confirm('Are you sure you want to delete this turf? This action cannot be undone.')) {
+      await deleteTurf(id);
+    }
+  };
+
   const renderTurfs = () => (
     <div className="tab-content">
       <div className="admin-header">
@@ -289,9 +314,11 @@ export default function AdminDashboard() {
             <h1 className="admin-header__title serif">Turf Management</h1>
             <p className="admin-header__subtitle">Manage your venues and pricing.</p>
           </div>
-          <button className="btn btn-primary" onClick={() => alert('Add new turf flow coming soon!')}>
-            + Add New Turf
-          </button>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button className="btn btn-primary" onClick={() => { setEditingTurf(null); setIsTurfModalOpen(true); }}>
+              + Add New Turf
+            </button>
+          </div>
         </div>
       </div>
 
@@ -308,7 +335,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {TURFS.map(t => (
+              {turfs.map(t => (
                 <tr key={t.id}>
                   <td style={{ fontWeight: 500 }}>{t.name}</td>
                   <td>{t.size}</td>
@@ -319,12 +346,27 @@ export default function AdminDashboard() {
                     </span>
                   </td>
                   <td>
-                    <button className="action-btn" onClick={() => alert(`Edit ${t.name}`)}>
-                      Edit
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button className="action-btn" onClick={() => { setEditingTurf(t); setIsTurfModalOpen(true); }}>
+                        Edit
+                      </button>
+                      <button className="action-btn" style={{ color: '#d32f2f', borderColor: 'rgba(211, 47, 47, 0.2)' }} onClick={() => handleDeleteTurf(t.id)}>
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
+              {turfs.length === 0 && (
+                <tr>
+                  <td colSpan={5}>
+                    <div className="empty-state">
+                      <div className="empty-state__icon">🏟️</div>
+                      <p>No turfs found. Add a new turf or seed the initial ones.</p>
+                    </div>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -349,6 +391,12 @@ export default function AdminDashboard() {
         {activeTab === 'bookings' && renderBookings()}
         {activeTab === 'turfs' && renderTurfs()}
       </main>
+      <TurfModal
+        isOpen={isTurfModalOpen}
+        onClose={() => setIsTurfModalOpen(false)}
+        onSave={handleSaveTurf}
+        initialData={editingTurf}
+      />
     </div>
   );
 }

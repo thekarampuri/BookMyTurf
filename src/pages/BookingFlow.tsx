@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Stepper, { Step } from '../components/Stepper';
-import { TURFS, generateSlots } from '../data/turfs';
+import { generateSlots } from '../data/turfs';
 import { getBookingsByDate, createBooking } from '../services/bookingService';
+import { subscribeToTurfs } from '../services/turfService';
 import type { Turf, TimeSlot } from '../types';
 import './BookingPage.css';
 import './DetailsPage.css';
@@ -82,6 +83,16 @@ export default function BookingFlow() {
   const [selectedSlotId, setSelectedSlotId] = useSessionState<string | null>('bf_slot', null);
   const [dbBookedTimes, setDbBookedTimes] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [turfs, setTurfs] = useState<Turf[]>([]);
+  const [isLoadingTurfs, setIsLoadingTurfs] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToTurfs((data) => {
+      setTurfs(data);
+      setIsLoadingTurfs(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const dates = useMemo(() => getFlatDates(), []);
 
@@ -219,27 +230,33 @@ export default function BookingFlow() {
               <section className="booking-section">
                 <h2 className="section-heading">Choose Turf</h2>
                 <div className={`turf-carousel ${selectedTurf ? 'turf-carousel--has-selection' : ''}`}>
-                  {TURFS.map((turf) => (
-                    <div
-                      key={turf.id}
-                      className={`turf-card ${selectedTurf?.id === turf.id ? 'turf-card--selected' : ''}`}
-                      onClick={() => { setSelectedTurf(turf); setSelectedSlotId(null); }}
-                    >
-                      <div className="turf-card__header">
-                        <div>
-                          <h3 className="turf-card__name">{turf.name}</h3>
-                          <span className="turf-card__size">{turf.size}</span>
+                  {isLoadingTurfs ? (
+                    <p style={{ color: 'var(--text-muted)' }}>Loading available turfs...</p>
+                  ) : turfs.length === 0 ? (
+                    <p style={{ color: 'var(--text-muted)' }}>No turfs available at the moment.</p>
+                  ) : (
+                    turfs.map((turf) => (
+                      <div
+                        key={turf.id}
+                        className={`turf-card ${selectedTurf?.id === turf.id ? 'turf-card--selected' : ''}`}
+                        onClick={() => { setSelectedTurf(turf); setSelectedSlotId(null); }}
+                      >
+                        <div className="turf-card__header">
+                          <div>
+                            <h3 className="turf-card__name">{turf.name}</h3>
+                            <span className="turf-card__size">{turf.size}</span>
+                          </div>
+                          <div className="turf-card__price-wrap">
+                            <span className="turf-card__price">₹{turf.morningPrice || 0}<small>/hr</small></span>
+                            <span className="turf-card__price-note">Starting</span>
+                          </div>
                         </div>
-                        <div className="turf-card__price-wrap">
-                          <span className="turf-card__price">₹{turf.basePrice}<small>/hr</small></span>
-                          <span className="turf-card__price-note">Starting</span>
+                        <div className="turf-card__amenities">
+                          {turf.amenities.map(am => <span key={am} className="turf-card__amenity">{am}</span>)}
                         </div>
                       </div>
-                      <div className="turf-card__amenities">
-                        {turf.amenities.map(am => <span key={am} className="turf-card__amenity">{am}</span>)}
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </section>
 

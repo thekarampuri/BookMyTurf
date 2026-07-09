@@ -1,6 +1,6 @@
 import type { Turf } from '../types';
 
-export const TURFS: Turf[] = [
+export const INITIAL_TURFS: Turf[] = [
   {
     id: 'turf-1',
     name: 'Grand Arena',

@@ -1,11 +1,23 @@
 import { useNavigate, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { TURFS } from '../data/turfs';
+import { useState, useEffect } from 'react';
+import { subscribeToTurfs } from '../services/turfService';
+import type { Turf } from '../types';
 import './HomePage.css';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const [turfs, setTurfs] = useState<Turf[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToTurfs((data) => {
+      setTurfs(data);
+      setIsLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="home page-bg">
@@ -77,21 +89,27 @@ export default function HomePage() {
           <p className="section__subtitle">Choose from our selection of premium turfs sized perfectly for your squad.</p>
         </div>
         <div className="fields-preview">
-          {TURFS.map(turf => (
-            <Link to="/booking" key={turf.id} className="field-card">
-              <div className="field-card__img">
-                ⚽
-              </div>
-              <div className="field-card__content">
-                <h3 className="field-card__title">{turf.name}</h3>
-                <span className="field-card__size">{turf.size}</span>
-                <div className="field-card__footer">
-                  <span className="field-card__price">₹{turf.basePrice}<small>/hr</small></span>
-                  <span className="field-card__action">Book Now →</span>
+          {isLoading ? (
+            <p style={{ textAlign: 'center', width: '100%', padding: '2rem', color: 'var(--text-muted)' }}>Loading fields...</p>
+          ) : turfs.length === 0 ? (
+            <p style={{ textAlign: 'center', width: '100%', padding: '2rem', color: 'var(--text-muted)' }}>No fields available right now.</p>
+          ) : (
+            turfs.map(turf => (
+              <Link to="/booking" key={turf.id} className="field-card">
+                <div className="field-card__img">
+                  ⚽
                 </div>
-              </div>
-            </Link>
-          ))}
+                <div className="field-card__content">
+                  <h3 className="field-card__title">{turf.name}</h3>
+                  <span className="field-card__size">{turf.size}</span>
+                  <div className="field-card__footer">
+                    <span className="field-card__price">₹{turf.morningPrice || 0}<small>/hr</small></span>
+                    <span className="field-card__action">Book Now →</span>
+                  </div>
+                </div>
+              </Link>
+            ))
+          )}
         </div>
       </section>
 
