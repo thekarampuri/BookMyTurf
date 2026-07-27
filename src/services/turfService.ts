@@ -44,12 +44,3 @@ export const deleteTurf = async (id: string): Promise<void> => {
   await deleteDoc(docRef);
 };
 
-// One-time utility to seed initial data
-export const seedTurfs = async (initialTurfs: Turf[]): Promise<void> => {
-  for (const turf of initialTurfs) {
-    const { id, ...data } = turf;
-    // We use the predefined string id from the mock data to keep references clean
-    const docRef = doc(db, TURFS_COLLECTION, id);
-    await setDoc(docRef, data);
-  }
-};

@@ -12,9 +12,8 @@ import {
   XCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { INITIAL_TURFS } from '../data/turfs';
 import { subscribeToBookings, updateBookingStatus as updateDbStatus } from '../services/bookingService';
-import { subscribeToTurfs, seedTurfs, createTurf, updateTurf, deleteTurf } from '../services/turfService';
+import { subscribeToTurfs, createTurf, updateTurf, deleteTurf } from '../services/turfService';
 import type { Booking, BookingStatus, Turf } from '../types';
 import AdminLogin from './AdminLogin';
 import TurfModal from '../components/TurfModal';
@@ -371,7 +370,7 @@ export default function AdminDashboard() {
                   <td colSpan={5}>
                     <div className="empty-state">
                       <div className="empty-state__icon">🏟️</div>
-                      <p>No turfs found. Add a new turf or seed the initial ones.</p>
+                      <p>No turfs found. Add a new turf.</p>
                     </div>
                   </td>
                 </tr>

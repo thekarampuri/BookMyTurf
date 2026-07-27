@@ -1,34 +1,6 @@
 import type { Turf } from '../types';
 
-export const INITIAL_TURFS: Turf[] = [
-  {
-    id: 'turf-1',
-    name: 'Grand Arena',
-    size: '60 × 40 ft',
-    surface: 'Premium Synthetic Grass',
-    amenities: ['Floodlights', 'Changing Rooms', 'Parking', 'Drinking Water', 'First Aid'],
-    morningPrice: 900,
-    eveningPrice: 1200,
-  },
-  {
-    id: 'turf-2',
-    name: 'The Pitch',
-    size: '80 × 50 ft',
-    surface: 'FIFA-Grade Turf',
-    amenities: ['Floodlights', 'Cafeteria', 'Changing Rooms', 'Parking', 'Scoreboard'],
-    morningPrice: 1000,
-    eveningPrice: 1400,
-  },
-  {
-    id: 'turf-3',
-    name: 'Mini Field',
-    size: '40 × 30 ft',
-    surface: 'Synthetic Grass',
-    amenities: ['Floodlights', 'Drinking Water', 'Parking'],
-    morningPrice: 700,
-    eveningPrice: 900,
-  },
-];
+
 
 export function generateSlots(turf: Turf, date: Date, bookedTimes: string[] = []): import('../types').TimeSlot[] {
   const slots: import('../types').TimeSlot[] = [];

@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Stepper, { Step } from '../components/Stepper';
 import { generateSlots } from '../data/turfs';
-import { getBookingsByDate, createBooking } from '../services/bookingService';
+import { getBookingsByDate, createBooking, updateBookingStatus } from '../services/bookingService';
 import { subscribeToTurfs } from '../services/turfService';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '../config/firebase';
@@ -186,10 +186,14 @@ export default function BookingFlow() {
         amount: advanceAmount,
         customerPhone: details.phone,
         customerName: details.name,
-        customerEmail: details.email
+        customerEmail: details.email,
+        turfId: selectedTurf.id,
+        turfName: selectedTurf.name,
+        date: selectedDate.toISOString().split('T')[0],
+        time: combinedSlot.time
       });
 
-      const { paymentSessionId, orderId } = result.data;
+      const { paymentSessionId, orderId, bookingId } = result.data;
 
       // 2. Open Cashfree Checkout Widget
       let checkoutOptions = {
@@ -203,23 +207,13 @@ export default function BookingFlow() {
           alert("Payment failed or was cancelled. Please try again.");
           setIsProcessing(false);
         } else if (result.paymentDetails) {
-          // 3. Payment Success - Create the booking record
+          // 3. Payment Success - Update the pending booking to Confirmed
           try {
-            await createBooking({
-              turfId: selectedTurf.id,
-              turfName: selectedTurf.name,
-              date: selectedDate.toISOString().split('T')[0],
-              time: combinedSlot.time,
-              userName: details.name,
-              userPhone: details.phone,
-              amount: combinedSlot.price,
-              status: 'Confirmed',
-              createdAt: new Date().toISOString()
-            });
+            await updateBookingStatus(bookingId, 'Confirmed');
             setCurrentStep(4);
           } catch (err) {
-             console.error("Failed to create booking after payment", err);
-             alert("Payment successful but booking failed to record. Please contact support.");
+             console.error("Failed to confirm booking after payment", err);
+             alert("Payment successful but booking failed to confirm. Please contact support.");
           }
         }
       });
