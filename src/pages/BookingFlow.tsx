@@ -178,7 +178,7 @@ export default function BookingFlow() {
         userName: details.name,
         userPhone: details.phone,
         amount: combinedSlot.price,
-        status: 'Pending',
+        status: 'Confirmed',
         createdAt: new Date().toISOString()
       });
       setCurrentStep(4);

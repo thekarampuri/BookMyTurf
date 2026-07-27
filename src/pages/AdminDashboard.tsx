@@ -342,7 +342,7 @@ export default function AdminDashboard() {
                   <td>₹{t.morningPrice} / ₹{t.eveningPrice}</td>
                   <td>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.85em' }}>
-                      {t.amenities.length} amenities
+                      {t.amenities?.length || 0} amenities
                     </span>
                   </td>
                   <td>
