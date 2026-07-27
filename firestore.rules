@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Turfs: Anyone can view, only authenticated admins can edit/delete/create
+    match /turfs/{turfId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Bookings: 
+    // - Anyone can create a booking
+    // - Anyone can read bookings (Needed for frontend conflict checking currently)
+    // - Only admins can update/delete
+    match /bookings/{bookingId} {
+      allow create, read: if true;
+      allow update, delete: if request.auth != null;
+    }
+  }
+}

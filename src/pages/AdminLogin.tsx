@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Lock } from 'lucide-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
 import './AdminLogin.css';
 
 interface AdminLoginProps {
@@ -7,16 +9,24 @@ interface AdminLoginProps {
 }
 
 export default function AdminLogin({ onLogin }: AdminLoginProps) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'admin' && password === '123') {
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
       onLogin();
-    } else {
-      setError('Invalid username or password');
+    } catch (err: any) {
+      console.error('Login error', err);
+      setError('Invalid email or password');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -31,13 +41,14 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
         
         <form onSubmit={handleSubmit} className="admin-login-form">
           <div className="form-group">
-            <label className="form-label">Username</label>
+            <label className="form-label">Email</label>
             <input 
-              type="text" 
+              type="email" 
               className="form-input" 
-              placeholder="Enter admin username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter admin email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className="form-group">
@@ -53,8 +64,8 @@ export default function AdminLogin({ onLogin }: AdminLoginProps) {
           
           {error && <div className="admin-login-error">{error}</div>}
           
-          <button type="submit" className="btn btn-primary btn-lg admin-login-btn">
-            Login to Dashboard
+          <button type="submit" className="btn btn-primary btn-lg admin-login-btn" disabled={isLoading}>
+            {isLoading ? 'Signing in...' : 'Login to Dashboard'}
           </button>
         </form>
       </div>

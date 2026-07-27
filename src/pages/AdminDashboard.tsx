@@ -1,4 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from '../config/firebase';
 import { 
   LayoutDashboard, 
   CalendarDays, 
@@ -22,9 +24,8 @@ type Tab = 'overview' | 'bookings' | 'turfs';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    sessionStorage.getItem('adminAuth') === 'true'
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [turfs, setTurfs] = useState<Turf[]>([]);
@@ -40,6 +41,15 @@ export default function AdminDashboard() {
 
   const totalBookings = bookings.length;
   const pendingBookings = bookings.filter(b => b.status === 'Pending').length;
+
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+      setIsAuthLoading(false);
+    });
+
+    return () => unsubscribeAuth();
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -96,9 +106,8 @@ export default function AdminDashboard() {
       </nav>
 
       <div className="admin-sidebar__footer">
-        <button className="admin-nav__item" onClick={() => {
-          sessionStorage.removeItem('adminAuth');
-          setIsAuthenticated(false);
+        <button className="admin-nav__item" onClick={async () => {
+          await signOut(auth);
         }}>
           <LogOut size={20} />
           <span>Logout</span>
@@ -374,11 +383,18 @@ export default function AdminDashboard() {
     </div>
   );
 
+  if (isAuthLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--bg)' }}>
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
     return (
       <AdminLogin onLogin={() => {
-        sessionStorage.setItem('adminAuth', 'true');
-        setIsAuthenticated(true);
+        // Auth state handled by onAuthStateChanged
       }} />
     );
   }
