@@ -6,6 +6,9 @@ import Stepper, { Step } from '../components/Stepper';
 import { generateSlots } from '../data/turfs';
 import { getBookingsByDate, createBooking } from '../services/bookingService';
 import { subscribeToTurfs } from '../services/turfService';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../config/firebase';
+import { load } from '@cashfreepayments/cashfree-js';
 import type { Turf, TimeSlot } from '../types';
 import './BookingPage.css';
 import './DetailsPage.css';
@@ -158,6 +161,13 @@ export default function BookingFlow() {
   const [secondsLeft, setSecondsLeft] = useState(TOTAL_SECONDS);
   const [expired, setExpired] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [cashfree, setCashfree] = useState<any>(null);
+
+  useEffect(() => {
+    load({ mode: "production" }).then((cf) => {
+      setCashfree(cf);
+    });
+  }, []);
 
   useEffect(() => {
     if (currentStep !== 3 || isProcessing) return;
@@ -167,25 +177,55 @@ export default function BookingFlow() {
   }, [currentStep, secondsLeft, isProcessing]);
 
   const handlePay = async () => {
-    if (!selectedTurf || !combinedSlot) return;
+    if (!selectedTurf || !combinedSlot || !cashfree) return;
     setIsProcessing(true);
     try {
-      await createBooking({
-        turfId: selectedTurf.id,
-        turfName: selectedTurf.name,
-        date: selectedDate.toISOString().split('T')[0],
-        time: combinedSlot.time,
-        userName: details.name,
-        userPhone: details.phone,
-        amount: combinedSlot.price,
-        status: 'Confirmed',
-        createdAt: new Date().toISOString()
+      // 1. Create a payment session via our Firebase Cloud Function
+      const createSession = httpsCallable<any, any>(functions, 'createPaymentSession');
+      const result = await createSession({
+        amount: advanceAmount,
+        customerPhone: details.phone,
+        customerName: details.name,
+        customerEmail: details.email
       });
-      setCurrentStep(4);
+
+      const { paymentSessionId, orderId } = result.data;
+
+      // 2. Open Cashfree Checkout Widget
+      let checkoutOptions = {
+        paymentSessionId: paymentSessionId,
+        redirectTarget: "_modal",
+      };
+
+      cashfree.checkout(checkoutOptions).then(async (result: any) => {
+        if (result.error) {
+          console.error("Payment failed", result.error);
+          alert("Payment failed or was cancelled. Please try again.");
+          setIsProcessing(false);
+        } else if (result.paymentDetails) {
+          // 3. Payment Success - Create the booking record
+          try {
+            await createBooking({
+              turfId: selectedTurf.id,
+              turfName: selectedTurf.name,
+              date: selectedDate.toISOString().split('T')[0],
+              time: combinedSlot.time,
+              userName: details.name,
+              userPhone: details.phone,
+              amount: combinedSlot.price,
+              status: 'Confirmed',
+              createdAt: new Date().toISOString()
+            });
+            setCurrentStep(4);
+          } catch (err) {
+             console.error("Failed to create booking after payment", err);
+             alert("Payment successful but booking failed to record. Please contact support.");
+          }
+        }
+      });
     } catch (err) {
-      console.error("Failed to create booking", err);
-      alert("Something went wrong. Please try again.");
-    } finally {
+      console.error("Failed to initiate payment", err);
+      alert("Something went wrong initializing the payment gateway. Please try again.");
       setIsProcessing(false);
     }
   };
