@@ -1,6 +1,6 @@
 # 🏟️ Turf Booking and Management System
 
-A modern web-based **Turf Booking and Management System** that enables users to easily search, book, and manage sports turf reservations while providing administrators with a powerful dashboard to manage bookings, turfs, users, and payments.
+A modern web-based **Turf Booking and Management System** that enables users to easily search, book, and manage sports turf reservations while providing administrators with a powerful dashboard to manage bookings, turfs, users, payments and admin dashboard.
 
 ---
 
